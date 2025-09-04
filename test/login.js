@@ -5,7 +5,8 @@ import { check } from 'k6';
 
 export const options = {
 
-    iterations: 20,
+    vus:100,
+    duration: '35s',
 
     thresholds: {
         http_req_failed: ['rate<0.01'], // http errors should be less than 1%
