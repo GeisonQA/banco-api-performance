@@ -1,0 +1,43 @@
+
+import http from 'k6/http';
+import { sleep, check } from 'k6';
+
+import { pegarBaseUrl } from '../utils/variaveis.js';
+import { obterToken } from '../helpers/autenticacao.js';
+
+
+export const options = {
+
+    iterations: 1,
+
+    thresholds: {
+        http_req_failed: ['rate<0.01'],
+        http_req_duration: ['p(95)<200'],
+
+    },
+
+};
+
+export default function () {
+
+    const token = obterToken();
+
+    const url = `${pegarBaseUrl()}/transferencias`;
+
+    const params = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    };
+
+    const response = http.get(url, params);
+    console.log(response.body);
+    check(response, {
+        'Validar status code 200': (r) => r.status === 200,
+        'Validar que retorna uma lista de transferencias': (r) => r.body.includes('transferencias') === true
+
+    });
+
+    sleep(1);
+}
