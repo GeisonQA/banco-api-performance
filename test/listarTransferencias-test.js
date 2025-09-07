@@ -8,7 +8,11 @@ import { obterToken } from '../helpers/autenticacao.js';
 
 export const options = {
 
-    iterations: 1,
+    stages: [{
+        duration: '30s', target: 20,
+        duration: '1m', target: 20,
+        duration: '30s', target: 0
+    }],
 
     thresholds: {
         http_req_failed: ['rate<0.01'],

@@ -8,7 +8,11 @@ const transferencias = JSON.parse(open('../fixtures/transferencias.json'));
 
 export const options = {
 
-    iterations: 1,
+    stages: [{
+        duration: '30s', target: 20,
+        duration: '1m', target: 20,
+        duration: '30s', target: 0
+    }],
 
     thresholds: {
         http_req_failed: ['rate<0.01'],
@@ -21,7 +25,7 @@ export const options = {
 export default function () {
 
     const token = obterToken();
-    transferencias.valor = 150; 
+    transferencias.valor = 150;
 
     const url = `${pegarBaseUrl()}/transferencias/3`;
     const payload = JSON.stringify(transferencias);
@@ -34,7 +38,7 @@ export default function () {
     };
 
     const response = http.put(url, payload, params);
-    
+
     check(response, {
         'Validar status code 204': (r) => r.status === 204,
 

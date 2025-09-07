@@ -7,7 +7,11 @@ import { obterToken } from '../helpers/autenticacao.js';
 
 export const options = {
 
-    iterations: 1,
+    stages: [{
+        duration: '30s', target: 20,
+        duration: '1m', target: 20,
+        duration: '30s', target: 0
+    }],
 
     thresholds: {
         http_req_failed: ['rate<0.01'],
@@ -27,12 +31,12 @@ export default function () {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
-        
+
         },
     };
 
     const response = http.get(url, params);
-console.log(response.body);
+    console.log(response.body);
     check(response, {
         'Validar status code 200': (r) => r.status === 200,
         'validar que retorna um ID específico': (r) => r.body.includes('"id":3') === true,
