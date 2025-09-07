@@ -1,10 +1,10 @@
-
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
 import { pegarBaseUrl } from '../utils/variaveis.js';
 import { obterToken } from '../helpers/autenticacao.js';
 
+const transferencias = JSON.parse(open('../fixtures/transferencias.json'));
 
 export const options = {
 
@@ -21,21 +21,22 @@ export const options = {
 export default function () {
 
     const token = obterToken();
+    transferencias.valor = 150; 
 
-    const url = `${pegarBaseUrl()}/transferencias`;
-
+    const url = `${pegarBaseUrl()}/transferencias/3`;
+    const payload = JSON.stringify(transferencias);
     const params = {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
+
         },
     };
 
-    const response = http.get(url, params);
-    console.log(response.body);
+    const response = http.put(url, payload, params);
+    
     check(response, {
-        'Validar status code 200': (r) => r.status === 200,
-        'Validar que retorna uma lista de transferencias': (r) => r.body.includes('transferencias') === true
+        'Validar status code 204': (r) => r.status === 204,
 
     });
 

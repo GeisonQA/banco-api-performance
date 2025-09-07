@@ -1,9 +1,10 @@
+
 import http from 'k6/http';
 const login = JSON.parse(open('../fixtures/login.json'));
-
+import { pegarBaseUrl } from '../utils/variaveis.js';
 
 export function obterToken() {
-    const url = 'http://localhost:3000/login';
+    const url = `${pegarBaseUrl()}/login`;
     const payload = JSON.stringify(login);
 
     const params = {
@@ -12,7 +13,7 @@ export function obterToken() {
         },
     };
 
-  const res = http.post(url, payload, params);
-
-  return res.json('token')
+    const response = http.post(url, payload, params);
+    return response.json('token');
+    
 }
