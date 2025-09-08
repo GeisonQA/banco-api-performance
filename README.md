@@ -1,129 +1,127 @@
-# Banco API Performance Tests
+# Banco API Performance Testing
 
-Performance tests for the Banco API using k6.
+Este projeto realiza testes de performance em uma API bancária usando k6, uma ferramenta moderna de testes de carga.
 
-## Introdução
-
-Este projeto contém testes de performance para a API do Banco, implementados com k6. Os testes cobrem as principais funcionalidades da API, incluindo login, criação, listagem, consulta específica e atualização de transferências. O projeto foi estruturado para ser facilmente configurável através de variáveis de ambiente, especialmente a `BASE_URL` que define o endpoint da API a ser testada.
-
-## Tecnologias Utilizadas
-
-- [k6](https://k6.io/) - Ferramenta de teste de carga e performance
-- JavaScript - Linguagem de programação utilizada para escrever os testes
-- JSON - Formato de dados para fixtures e configurações
-
-## Estrutura do Repositório
+## Estrutura do Projeto
 
 ```
-banco-api-performance/
-├── fixtures/
-│   ├── login.json
-│   └── transferencias.json
-├── helpers/
-│   └── autenticacao.js
-├── test/
-│   ├── listarTransferencias-test.js
-│   ├── login-test.js
-│   ├── transferenciasId-test.js
-│   ├── trasnferencias-test.js
-│   └── updateTransferenciasId-test.js
-├── utils/
-│   └── variaveis.js
-├── .gitignore
-└── README.md
+.
+├── fixtures/           # Dados de teste em formato JSON
+├── flows/              # Fluxos de testes representando cenários de usuário
+├── helpers/            # Funções auxiliares para os testes
+├── test/               # Configurações de diferentes tipos de testes
+│   ├── contas/         # Testes relacionados a contas bancárias
+│   ├── login/          # Testes relacionados ao login
+│   └── transferencias/ # Testes relacionados a transferências
+└── utils/              # Funções utilitárias
 ```
 
-## Objetivo de Cada Grupo de Arquivos
+## Pré-requisitos
 
-### fixtures/
-Contém arquivos JSON com dados de teste utilizados nos testes de performance:
-- `login.json`: Credenciais para autenticação no sistema
-- `transferencias.json`: Dados para criação/atualização de transferências
+- [k6](https://k6.io/docs/getting-started/installation/)
+- Acesso à API bancária (por padrão, o projeto usa `http://localhost:3000`)
 
-### helpers/
-Funções auxiliares compartilhadas entre os testes:
-- `autenticacao.js`: Função para obter token de autenticação
+## Configuração
 
-### test/
-Scripts de teste de performance para cada endpoint da API:
-- `login-test.js`: Testes para o endpoint de autenticação
-- `trasnferencias-test.js`: Testes para criação de transferências
-- `listarTransferencias-test.js`: Testes para listagem de transferências
-- `transferenciasId-test.js`: Testes para consulta de transferência específica
-- `updateTransferenciasId-test.js`: Testes para atualização de transferências
+1. Clone este repositório
+2. Instale o k6 seguindo as instruções no site oficial
+3. Certifique-se de que a API bancária está em execução
+4. Atualize os dados de teste nos arquivos JSON em `fixtures/` conforme necessário
 
-### utils/
-Funções utilitárias compartilhadas:
-- `variaveis.js`: Funções para obtenção de variáveis de ambiente como a BASE_URL
+## Estrutura dos Testes
 
-## Instalação
+O projeto possui três tipos principais de testes:
 
-1. Certifique-se de ter o k6 instalado em sua máquina. Se não tiver, instale seguindo as instruções em [https://k6.io/docs/get-started/installation/](https://k6.io/docs/get-started/installation/)
+1. **Load Test** (`*.load.test.js`) - Testa a estabilidade do sistema sob uma carga constante
+2. **Stress Test** (`*.stress.test.js`) - Testa os limites do sistema aumentando gradualmente a carga
+3. **Spike Test** (`*.spike.test.js`) - Testa a resposta do sistema a picos súbitos de tráfego
 
-2. Clone o repositório:
-   ```bash
-   git clone <url-do-repositorio>
-   cd banco-api-performance
-   ```
+### Cenários de Teste
 
-3. Não é necessário instalar dependências adicionais, pois o k6 executa os scripts JavaScript diretamente.
+- **Login**: Testa o endpoint de autenticação
+- **Contas**: Testa a criação de contas bancárias
+- **Transferências**: Testa a funcionalidade de transferência entre contas
 
-## Execução dos Testes
+## Executando os Testes
 
-### Execução básica
-
-Para executar um teste específico, utilize o comando:
+Para executar qualquer teste, use o comando:
 
 ```bash
-k6 run test/<nome-do-teste>.js
+k6 run test/[pasta]/[nome-do-arquivo].js
 ```
 
-Por exemplo:
-```bash
-k6 run test/login-test.js
-```
-
-### Execução com variável de ambiente
-
-Para definir a URL base da API, utilize a variável de ambiente `BASE_URL`:
+### Exemplos
 
 ```bash
-BASE_URL=https://api.exemplo.com k6 run test/login-test.js
+# Load test para transferências
+k6 run test/transferencias/transferencias.load.test.js
+
+# Stress test para contas
+k6 run test/contas/contas.stress.test.js
+
+# Spike test para login
+k6 run test/login/login.spike.test.js
 ```
 
-No Windows (Command Prompt):
-```cmd
-set BASE_URL=https://api.exemplo.com&& k6 run test/login-test.js
-```
+### Configurando a URL base
 
-No Windows (PowerShell):
-```powershell
-$env:BASE_URL="https://api.exemplo.com"; k6 run test/login-test.js
-```
-
-### Execução com dashboard em tempo real
-
-Para executar os testes com o dashboard web em tempo real e exportar o relatório:
+Por padrão, os testes usam `http://localhost:3000` como URL base. Para alterar, defina a variável de ambiente `BASE_URL`:
 
 ```bash
-K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT=report.html k6 run test/login-test.js
+# Windows
+set BASE_URL=http://meu-servidor.com && k6 run test/transferencias/transferencias.load.test.js
+
+# Linux/Mac
+BASE_URL=http://meu-servidor.com k6 run test/transferencias/transferencias.load.test.js
 ```
 
-No Windows (PowerShell):
-```powershell
-$env:K6_WEB_DASHBOARD="true"; $env:K6_WEB_DASHBOARD_EXPORT="report.html"; k6 run test/login-test.js
-```
+## Estrutura de um Teste
 
-O relatório será gerado no arquivo `report.html` ao final da execução.
+Cada arquivo de teste segue esta estrutura:
 
-### Execução de todos os testes
+1. Importa um fluxo específico do diretório `flows/`
+2. Define opções de teste, incluindo:
+   - `stages`: Define como a carga de usuários virtuais muda ao longo do tempo
+   - `thresholds`: Define critérios de sucesso para métricas
+3. Exporta o fluxo como função padrão
 
-Para executar todos os testes sequencialmente:
+## Métricas
+
+Os testes coletam várias métricas, incluindo:
+- Tempo de resposta das requisições
+- Taxa de requisições com falha
+- Tempo total de execução
+- Uso de memória
+
+### Thresholds
+
+Os testes verificam se:
+- Menos de 1% das requisições falham (`http_req_failed: ['rate<0.01']`)
+- 95% das requisições respondem em menos de 200ms (`http_req_duration: ['p(95)<200']`)
+
+## Personalização
+
+### Alterando dados de teste
+
+Modifique os arquivos JSON no diretório `fixtures/` para alterar os dados usados nos testes:
+- `login.json`: Credenciais para autenticação
+- `contas.json`: Dados para criação de contas
+- `transferencias.json`: Dados para transferências
+
+### Modificando thresholds
+
+Altere os valores em `thresholds` nos arquivos de teste para definir critérios diferentes de sucesso.
+
+### Alterando padrões de carga
+
+Modifique o array `stages` nos arquivos de teste para definir diferentes padrões de carga de usuários virtuais.
+
+## Gerando Relatórios
+
+Para gerar um relatório HTML dos testes:
 
 ```bash
-k6 run test/login-test.js && \
-k6 run test/trasnferencias-test.js && \
-k6 run test/listarTransferencias-test.js && \
-k6 run test/transferenciasId-test.js && \
-k6 run test/updateTransferenciasId-test.js
+k6 run --out html=report.html test/transferencias/transferencias.load.test.js
 ```
+
+O relatório será salvo como `report.html` na raiz do projeto.
